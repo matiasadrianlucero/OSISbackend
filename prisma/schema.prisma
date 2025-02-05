@@ -1,0 +1,64 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = "postgresql://postgres:qmoaMOhmefCYFvZBdQXiiIecddJGVCXx@autorack.proxy.rlwy.net:26887/railway"
+}
+model User {
+  id      Int @id @default(autoincrement())
+  username   String @unique @db.VarChar(255)
+  email   String @unique @db.VarChar(255)
+  password    String @db.VarChar(255)
+  bio String? @db.VarChar(255)
+  profilePic String? @db.VarChar(255)
+  Post Post[]
+  sending FollowRequest[]  @relation("sending") 
+  reciever FollowRequest[] @relation("reciever")
+  author Comment[]
+  LikesRel Likes[]
+}
+model Post {
+  id      Int @id @default(autoincrement())
+  text   String? @db.VarChar(255)
+  img String @db.VarChar(255)
+  visibility Boolean @default(false)
+  dateOfCreation DateTime @default(now()) @map("date_of_creation")
+  user User @relation(fields: [createdBy], references: [id])
+  createdBy Int
+  likes Int?  @default(0)
+  LikesRel Likes[]
+  postedIn Comment[]
+}
+model FollowRequest {
+  id Int @id @default(autoincrement())
+  sendingRelation User @relation(name: "sending",fields: [sentById], references: [id])
+  sentById Int
+  recieverRelation User @relation(name: "reciever",fields: [sentToId], references: [id])
+  sentToId Int 
+  response String? @db.VarChar(255)@default("pending")
+  dateOfCreation DateTime @default(now()) @map("date_of_creation")
+}
+model Comment {
+  id Int @id @default(autoincrement())
+  commentRelation User @relation(fields: [authorId], references: [id])
+  authorId Int
+  postRelation Post @relation(fields: [postId], references: [id])
+  postId Int 
+  response String @db.VarChar(255)
+  dateOfCreation DateTime @default(now()) @map("date_of_creation")
+}
+model Likes {
+  id Int @id @default(autoincrement())
+  userRelation User @relation(fields: [userId], references: [id])
+  userId Int
+  postRelation Post @relation(fields: [postId], references: [id])
+  postId Int 
+}
