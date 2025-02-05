@@ -20,7 +20,7 @@ export async function queryLogin(email,password) {
         email:selectedUser.email,
         id:selectedUser.id
       }
-      const token = jwt.sign({ toJWT }, 'osisProject', { expiresIn: '1d' });
+      const token = jwt.sign({ toJWT }, '?', { expiresIn: '1d' });
 
       return {
         username:selectedUser.username,
